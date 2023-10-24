@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const connectDB = async () => {
   try {
-    const con = await mongoose.connect(
-      "mongodb+srv://Ghaalia:OxvSvpq94oGxTR7w@cluster0.mx8vcfj.mongodb.net/FirstDB"
-    );
+    console.log(process.env.mongo_bd_url);
+    const con = await mongoose.connect(process.env.mongo_bd_url);
     console.log(`mongo connected: ${con.connection.host}`);
-  } catch {
-    console.log(`Somthing went wrong while connecting to DataBase `);
+  } catch (e) {
+    console.log(`Somthing went wrong while connecting to DataBase `, e);
   }
 };
 

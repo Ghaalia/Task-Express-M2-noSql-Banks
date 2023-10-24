@@ -1,10 +1,17 @@
-let accounts = require('../../accounts');
+let accounts = require("../../accounts");
+const Account = require("../../modal/Account");
 
-exports.accountCreate = (req, res) => {
-  const id = accounts[accounts.length - 1].id + 1;
-  const newAccount = { ...req.body, funds: 0, id };
-  accounts.push(newAccount);
-  res.status(201).json(newAccount);
+exports.accountCreate = async (req, res) => {
+  try {
+    const newAccount = await Account.create(req.body);
+    return res.status(201).json(newAccount);
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
+  // const id = accounts[accounts.length - 1].id + 1;
+  // const newAccount = { ...req.body, funds: 0, id };
+  // accounts.push(newAccount);
+  // res.status(201).json(newAccount);
 };
 
 exports.accountDelete = (req, res) => {
@@ -14,7 +21,7 @@ exports.accountDelete = (req, res) => {
     accounts = accounts.filter((account) => account.id !== +accountId);
     res.status(204).end();
   } else {
-    res.status(404).json({ message: 'Account not found' });
+    res.status(404).json({ message: "Account not found" });
   }
 };
 
@@ -25,12 +32,17 @@ exports.accountUpdate = (req, res) => {
     foundAccount.funds = req.body.funds;
     res.status(204).end();
   } else {
-    res.status(404).json({ message: 'Account not found' });
+    res.status(404).json({ message: "Account not found" });
   }
 };
 
-exports.accountsGet = (req, res) => {
-  res.json(accounts);
+exports.accountsGet = async (req, res) => {
+  try {
+    const accounts = await Account.find();
+    return res.status(200).json(accounts);
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
 };
 
 exports.getAccountByUsername = (req, res) => {
@@ -38,7 +50,7 @@ exports.getAccountByUsername = (req, res) => {
   const foundAccount = accounts.find(
     (account) => account.username === username
   );
-  if (req.query.currency === 'usd') {
+  if (req.query.currency === "usd") {
     const accountInUsd = { ...foundAccount, funds: foundAccount.funds * 3.31 };
     res.status(201).json(accountInUsd);
   }
