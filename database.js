@@ -7,7 +7,7 @@ const connectDB = async () => {
     );
     console.log(`mongo connected: ${con.connection.host}`);
   } catch {
-    console.log(`Somthing went wrng while connecting to DataBase `);
+    console.log(`Somthing went wrong while connecting to DataBase `);
   }
 };
 
