@@ -8,31 +8,35 @@ exports.accountCreate = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ msg: error.message });
   }
-  // const id = accounts[accounts.length - 1].id + 1;
-  // const newAccount = { ...req.body, funds: 0, id };
-  // accounts.push(newAccount);
-  // res.status(201).json(newAccount);
 };
 
-exports.accountDelete = (req, res) => {
+exports.accountDelete = async (req, res) => {
   const { accountId } = req.params;
-  const foundAccount = accounts.find((account) => account.id === +accountId);
-  if (foundAccount) {
-    accounts = accounts.filter((account) => account.id !== +accountId);
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Account not found" });
+  try {
+    const foundAccount = await Account.findById(accountId);
+    if (foundAccount) {
+      await foundAccount.deleteOne();
+      return res.status(204).end();
+    } else {
+      return res.status(404).json({ message: "Account doesn't exist" });
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
   }
 };
 
-exports.accountUpdate = (req, res) => {
+exports.accountUpdate = async (req, res) => {
   const { accountId } = req.params;
-  const foundAccount = accounts.find((account) => account.id === +accountId);
-  if (foundAccount) {
-    foundAccount.funds = req.body.funds;
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Account not found" });
+  try {
+    const foundAccount = await Account.findById(accountId);
+    if (foundAccount) {
+      await foundAccount.updateOne(req.body);
+      return res.status(204).end();
+    } else {
+      return res.status(404).json({ msg: "Account doesn't exist" });
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
   }
 };
 
@@ -52,7 +56,7 @@ exports.getAccountByUsername = (req, res) => {
   );
   if (req.query.currency === "usd") {
     const accountInUsd = { ...foundAccount, funds: foundAccount.funds * 3.31 };
-    res.status(201).json(accountInUsd);
+    return res.status(201).json(accountInUsd);
   }
-  res.status(201).json(foundAccount);
+  return res.status(201).json(foundAccount);
 };
